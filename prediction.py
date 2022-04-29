@@ -13,7 +13,7 @@ if __name__ == "__main__":
     sc = SparkContext(appName="StreamingKMeansExample")  # SparkContext
     #ssc = StreamingContext(sc, 1)
 
-    model2 = StreamingKMeansModel.load(sc, "K_Means_1.model")
+    model2 = StreamingKMeansModel.load(sc, "K_Means.model")
     result = model2.predict(01/05/2010 12:00:00 AM,150,34.1016,-118.3295,)
     print("/"*80)
     print(result)
