@@ -16,22 +16,22 @@ if __name__ == "__main__":
     # $example on$
     # we make an input stream of vectors for training,
     # as well as a stream of vectors for testing
-def parse(lp):
-        label = float(lp[lp.find('(') + 1: lp.find(')')])
-        vec = Vectors.dense(lp[lp.find('[') + 1: lp.find(']')].split(','))
+    #def parse(lp):
+        #label = float(lp[lp.find('(') + 1: lp.find(')')])
+        #vec = Vectors.dense(lp[lp.find('[') + 1: lp.find(']')].split(','))
 
-        return LabeledPoint(label, vec)
+        #return LabeledPoint(label, vec)
 
-    trainingData = sc.textFile("data/mllib/kmeans_data.txt")\
-        .map(lambda line: Vectors.dense([float(x) for x in line.strip().split(' ')]))
+    trainingData = sc.textFile("")\
+        .map(lambda line: Vectors.dense([float(x) for x in line.strip().split(',')]))
 
-    testingData = sc.textFile("data/mllib/streaming_kmeans_data_test.txt").map(parse)
+    #testingData = sc.textFile("data/mllib/streaming_kmeans_data_test.txt").map(parse)
 
     trainingQueue = [trainingData]
-    testingQueue = [testingData]
+    #testingQueue = [testingData]
 
     trainingStream = ssc.queueStream(trainingQueue)
-    testingStream = ssc.queueStream(testingQueue)
+    #testingStream = ssc.queueStream(testingQueue)
 
     # We create a model with random clusters and specify the number of clusters to find
     model = StreamingKMeans(k=2, decayFactor=1.0).setRandomCenters(3, 1.0, 0)
@@ -40,27 +40,26 @@ def parse(lp):
     # printing the predicted cluster assignments on new data points as they arrive.
     model.trainOn(trainingStream)
 
-    result = model.predictOnValues(testingStream.map(lambda lp: (lp.label, lp.features)))
+    #result = model.predictOnValues(testingStream.map(lambda lp: (lp.label, lp.features)))
 
-
-    print("&"*80)
-    result.pprint()
-    model = model.latestModel()
-    model.save(sc, "K_Means_test_v4.model")
-    result = model.predict([1.7, 0.4, 0.9])
-    print("*-"*80)
-    print("the result in the original model is: ",result)
-
-
-
-    model2 = StreamingKMeansModel.load(sc, "K_Means_test_v4.model")
-    result = model2.predict([1.7, 0.4, 0.9])
-    print("/"*80)
+    #print("&"*80)
     #result.pprint()
-    print(result)
+    model = model.latestModel()
+    model.save(sc, "K_Means.model")
+    #result = model.predict([1.7, 0.4, 0.9])
+    print("*-"*80)
+    #print("the result in the original model is: ",result)
+
+
+
+    model2 = StreamingKMeansModel.load(sc, "K_Means.model")
+    #result = model2.predict([1.7, 0.4, 0.9])
+    print("/"*80)
+    #print(result)
 
     ssc.start()
     ssc.stop(stopSparkContext=True, stopGraceFully=True)
     # $example off$
 
     print("Final centers: " + str(model.centers))
+    print("Final centers Model 2: " + str(model2.centers))
